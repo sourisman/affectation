@@ -16,13 +16,16 @@ final class Session
         }
 
         session_name((string) Config::get('app.session_name', 'affecta_session'));
+
+        [$secure, $sameSite] = self::cookiePolicy();
+
         session_set_cookie_params([
             'lifetime' => 0,
             'path'     => '/',
             'domain'   => '',
-            'secure'   => (bool) Config::get('app.session_secure', false),
+            'secure'   => $secure,
             'httponly' => true,
-            'samesite' => 'Lax',
+            'samesite' => $sameSite,
         ]);
         session_start();
 
@@ -118,5 +121,37 @@ final class Session
         }
 
         session_destroy();
+    }
+
+    /**
+     * Politique de cookie de session.
+     *
+     * Par défaut : `Lax` + `Secure` selon la configuration. Lorsqu'un aperçu
+     * encadré est autorisé (ALLOW_IFRAME_EMBED) et que la requête arrive en
+     * HTTPS, `SameSite=None; Secure` est nécessaire : dans une iframe tierce,
+     * un cookie `Lax` ne serait jamais transmis et la session serait perdue.
+     *
+     * @return array{0:bool,1:string}
+     */
+    private static function cookiePolicy(): array
+    {
+        $secure = (bool) Config::get('app.session_secure', false);
+        $sameSite = (string) Config::get('app.session_samesite', 'Lax');
+
+        if ((bool) Config::get('app.security.allow_embed', false) && self::isSecureRequest()) {
+            return [true, 'None'];
+        }
+
+        return [$secure, $sameSite];
+    }
+
+    /** Détecte HTTPS, y compris derrière un reverse-proxy (aperçu, load balancer). */
+    private static function isSecureRequest(): bool
+    {
+        if (!empty($_SERVER['HTTPS']) && strtolower((string) $_SERVER['HTTPS']) !== 'off') {
+            return true;
+        }
+
+        return strtolower((string) ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '')) === 'https';
     }
 }

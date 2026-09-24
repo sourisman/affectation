@@ -16,7 +16,8 @@ return [
 
     // Sécurité
     'session_name'    => (string) Env::get('SESSION_NAME', 'affecta_session'),
-    'session_secure'  => Env::bool('SESSION_SECURE', false),
+    'session_secure'   => Env::bool('SESSION_SECURE', false),
+    'session_samesite' => (string) Env::get('SESSION_SAMESITE', 'Lax'),
     'trusted_proxies' => array_filter(explode(',', (string) Env::get('TRUSTED_PROXIES', ''))),
 
     'security' => [

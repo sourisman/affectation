@@ -29,6 +29,7 @@ final class AuthMiddleware implements MiddlewareInterface
         Session::put('intended_url', $request->path());
         Session::flash('warning', 'Veuillez vous connecter pour continuer.');
 
-        return Response::redirect(rtrim((string) Config::get('app.url', ''), '/') . '/login');
+        // Redirection relative : reste correcte derrière un reverse-proxy ou un aperçu.
+        return Response::redirect('/login');
     }
 }

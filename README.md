@@ -218,7 +218,7 @@ contrastes AA · lien d'évitement · `prefers-reduced-motion`.
 | `APP_URL` | URL publique (canonical, sitemap, redirections) | `http://localhost:8080` |
 | `DB_DRIVER` | `mysql` (production) ou `sqlite` (démo locale) | `mysql` |
 | `DB_HOST`, `DB_NAME`, `DB_USERNAME`, `DB_PASSWORD` | Connexion MySQL | `db`, `affecta` |
-| `SESSION_SECURE`, `HSTS_ENABLED` | Durcissement HTTPS | `false` |
+| `SESSION_SECURE`, `SESSION_SAMESITE`, `HSTS_ENABLED` | Durcissement des sessions et HTTPS | `false`, `Lax`, `false` |
 | `ALLOW_IFRAME_EMBED` | Autorise l'affichage encadré (aperçu local uniquement) | `false` |
 | `CONTACT_RECIPIENT`, `CONTACT_RATE_LIMIT`, `CONTACT_MIN_DELAY` | Contact et anti-spam | `contact@affecta.dev`, `5`, `3` |
 | `MAIL_DRIVER` | `log` (écrit dans `storage/logs`) ou `smtp` | `log` |
