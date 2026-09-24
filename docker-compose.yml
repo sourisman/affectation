@@ -1,0 +1,91 @@
+# =============================================================================
+#  AFFECTA — pile complète : nginx + PHP-FPM + MySQL 8
+#  Démarrage :  docker compose up -d --build
+#  Migrations : docker compose exec app php bin/migrate.php
+#  Données    : docker compose exec app php bin/seed.php
+# =============================================================================
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: affecta-app
+    restart: unless-stopped
+    environment:
+      APP_ENV: ${APP_ENV:-production}
+      APP_DEBUG: ${APP_DEBUG:-false}
+      APP_URL: ${APP_URL:-http://localhost:8080}
+      DB_DRIVER: mysql
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_NAME: ${DB_NAME:-affecta}
+      DB_USERNAME: ${DB_USERNAME:-affecta}
+      DB_PASSWORD: ${DB_PASSWORD:-affecta_secret}
+      MAIL_DRIVER: ${MAIL_DRIVER:-log}
+      CONTACT_RECIPIENT: ${CONTACT_RECIPIENT:-contact@affecta.dev}
+      SEED_ADMIN_EMAIL: ${SEED_ADMIN_EMAIL:-admin@affecta.dev}
+      SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:-}
+    volumes:
+      # Monté uniquement en développement : commenter pour une image figée.
+      - ./:/var/www/html:delegated
+      - storage-data:/var/www/html/storage
+    depends_on:
+      db:
+        condition: service_healthy
+    networks: [affecta]
+
+  web:
+    image: nginx:1.27-alpine
+    container_name: affecta-web
+    restart: unless-stopped
+    ports:
+      - "${HTTP_PORT:-8080}:80"
+    volumes:
+      - ./:/var/www/html:ro
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on: [app]
+    networks: [affecta]
+
+  db:
+    image: mysql:8.4
+    container_name: affecta-db
+    restart: unless-stopped
+    command: >-
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+      --default-authentication-plugin=caching_sha2_password
+    environment:
+      MYSQL_DATABASE: ${DB_NAME:-affecta}
+      MYSQL_USER: ${DB_USERNAME:-affecta}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-affecta_secret}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root_secret}
+    volumes:
+      - db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-p${DB_ROOT_PASSWORD:-root_secret}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks: [affecta]
+
+  # Outil d'administration de la base (profil « tools »)
+  adminer:
+    image: adminer:4
+    container_name: affecta-adminer
+    restart: unless-stopped
+    profiles: [tools]
+    ports:
+      - "${ADMINER_PORT:-8081}:8080"
+    environment:
+      ADMINER_DEFAULT_SERVER: db
+    depends_on: [db]
+    networks: [affecta]
+
+volumes:
+  db-data:
+  storage-data:
+
+networks:
+  affecta:
+    driver: bridge
