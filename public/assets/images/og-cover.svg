@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#04050a"/><stop offset="1" stop-color="#0f1219"/>
+    </linearGradient>
+    <radialGradient id="halo" cx="50%" cy="0%" r="70%">
+      <stop offset="0" stop-color="#b6ff2e" stop-opacity=".22"/><stop offset="1" stop-color="#b6ff2e" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="acc" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#cbff5c"/><stop offset="1" stop-color="#9ae600"/>
+    </linearGradient>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M48 0H0v48" fill="none" stroke="#ffffff" stroke-opacity=".05"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#halo)"/>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+  <g transform="translate(96 250)">
+    <text font-family="Space Grotesk, Inter, sans-serif" font-size="76" font-weight="600" fill="#f4f6fa">Construisons le futur</text>
+    <text y="96" font-family="Space Grotesk, Inter, sans-serif" font-size="76" font-weight="600" fill="url(#acc)">du digital.</text>
+    <text y="170" font-family="Inter, sans-serif" font-size="26" fill="#9aa3b4">AFFECTA — pilotage des affectations et de la mobilité interne</text>
+  </g>
+  <g transform="translate(96 120)">
+    <path d="M28 0 52 14v28L28 56 4 42V14L28 0Z" fill="none" stroke="#b6ff2e" stroke-width="2" opacity=".6"/>
+    <path d="M28 14 40 21v14l-12 7-12-7V21l12-7Z" fill="url(#acc)"/>
+    <text x="74" y="38" font-family="Space Grotesk, sans-serif" font-size="26" font-weight="600" letter-spacing="6" fill="#f4f6fa">AFFECTA</text>
+  </g>
+</svg>
